@@ -23,12 +23,10 @@
  * @param text pointer for char array to hold received text 
  */
 void readTextTCP(int inSocket, char* text, int maxLength )
-{
+{   
     char ch=0;
     int pos=0;
-
     read(inSocket, &ch, 1);
-
     while(ch != 0)
     {
         if(pos < maxLength)
@@ -36,6 +34,9 @@ void readTextTCP(int inSocket, char* text, int maxLength )
         read(inSocket, &ch, 1);
     }
     text[pos]=0;  // insert null termination
+    
+
+    
 }
 
 /**
