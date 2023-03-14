@@ -19,6 +19,32 @@ void error(const char *msg)
     exit(0);
 }
 
+void SendFileContent(int sock, sockaddr_in *from, socklen_t *fromlen, const char* filename)
+{
+	FILE * fp;
+	char charbuffer[35];
+	char ch = 0;
+	int n, bufLen;
+	// open file /proc/uptime
+	fp = fopen(filename, "r");
+	// load value
+	bzero(charbuffer, sizeof(charbuffer));
+	//bzero(charbuffer,sizeof(charbuffer));
+	for (int i = 0; ch != EOF; i++)
+	{
+		ch = fgetc(fp);
+		charbuffer[i] = ch;
+		bufLen = i;
+	}
+	printf("\n buffer = %s\n",charbuffer);
+	//close file
+	fclose(fp);
+	// send value
+	n = sendto(sock,charbuffer , bufLen,
+			0,(struct sockaddr *)from,*fromlen);
+	if (n  < 0) error("sendto");
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -46,67 +72,17 @@ int main(int argc, char *argv[])
    while (1) {
        n = recvfrom(sock,buf,1024,0,(struct sockaddr *)&from,&fromlen);
        if (n < 0) error("recvfrom");
+	   printf("Der er modtaget et %s\n", buf);
 	   if (buf[0] == 'u' || buf[0] == 'U')
-	   {
-			printf("der er modtaget et %s\n", buf);
-
-			FILE * fp;
-			char charbuffer[25];
-			char ch = 0;
-			// open file /proc/uptime
-			fp = fopen(FILENAME_UPTIME, "r");
-			// load value
-			
-			//bzero(charbuffer,sizeof(charbuffer));
-			for (size_t i = 0; ch != EOF; i++)
-			{
-				ch = fgetc(fp);
-				charbuffer[i] = ch;
-				printf("%c",ch);
-			}
-
-			printf("\n buffer = %s\n",charbuffer);
-			//close file
-			fclose(fp);
-			// send value
-			n = sendto(sock,charbuffer ,sizeof(charbuffer),
-                  0,(struct sockaddr *)&from,fromlen);
-       		if (n  < 0) error("sendto");
-
-	   }
+			SendFileContent(sock, &from, &fromlen, FILENAME_UPTIME);
 	   else if (buf[0] == 'l' || buf[0] == 'L')
-	   {
-			printf("der er modtaget et %s\n", buf);
-
-			FILE * fp;
-			char charbuffer[30];
-			char ch = 0;
-			// open file /proc/uptime
-			fp = fopen(FILENAME_LOADAVG, "r");
-			// load value
-			
-			//bzero(charbuffer,sizeof(charbuffer));
-			for (size_t i = 0; ch != EOF; i++)
-			{
-				ch = fgetc(fp);
-				charbuffer[i] = ch;
-				printf("%c",ch);
-			}
-
-			printf("\n buffer = %s\n",charbuffer);
-			//close file
-			fclose(fp);
-			// send value
-			n = sendto(sock,charbuffer ,sizeof(charbuffer),
-                  0,(struct sockaddr *)&from,fromlen);
-       		if (n  < 0) error("sendto");
-	   }
+			SendFileContent(sock, &from, &fromlen, FILENAME_LOADAVG);
 	   else
 	   {
 			n = sendto(sock,"message not u or L, Got your message\n",37,
                   0,(struct sockaddr *)&from,fromlen);
        		if (n  < 0) error("sendto");
-			printf("der blev modtaget et forkert tegn: %s\n", buf);
+			printf("Der blev modtaget et forkert tegn: %s\n", buf);
 	   }
    }
    return 0;
