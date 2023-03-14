@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 {
 	printf("Starting client...\n");
 
-	int sockfd, portno = 9001, n;
+	int sockfd, portno = 9000, n;
 	struct sockaddr_in serv_addr;
 	struct hostent *server;
 	uint8_t buffer[BUFSIZE];
