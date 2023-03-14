@@ -36,7 +36,7 @@ void SendFileContent(int sock, sockaddr_in *from, socklen_t *fromlen, const char
 		charbuffer[i] = ch;
 		bufLen = i;
 	}
-	printf("\n buffer = %s\n",charbuffer);
+	printf("\n sender filen: %s\n",filename);
 	//close file
 	fclose(fp);
 	// send value
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
    while (1) {
        n = recvfrom(sock,buf,1024,0,(struct sockaddr *)&from,&fromlen);
        if (n < 0) error("recvfrom");
-	   printf("Der er modtaget et %s\n", buf);
+	   printf("Der er modtaget: %s\n", buf);
 	   if (buf[0] == 'u' || buf[0] == 'U')
 			SendFileContent(sock, &from, &fromlen, FILENAME_UPTIME);
 	   else if (buf[0] == 'l' || buf[0] == 'L')
