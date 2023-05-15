@@ -1,34 +1,36 @@
-	DOCTYPE <html>
+<DOCTYPE html>
 	<html lang="en">
+
 	<head>
-			<title> SWNGK WebClient </title>
+		<title> SWNGK WebClient </title>
 
-			<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-			<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-			<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-			<script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/js/tabulator.min.js"></script>
-			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/css/tabulator.min.css"></link>
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/js/tabulator.min.js"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/css/tabulator.min.css">
+		</link>
 
-			<script type = "text/javascript"></script>
+		<script type="text/javascript">
 
 			//WebSocket Routing (Note: Route Is chat)
 			const socket = new WebSocket('ws://localhost:8080/chat');
 
 			//Listen for messages
-			socket.addEventListener('open', function (event){
+			socket.addEventListener('open', function (event) {
 				//Sending a message to the web socket server...
 				socket.send('Update coming here');
 			});
 
 			//Listen for messages
-			socket.addEventListener('message', function (message){
-				console.,log('Message from server', message.data);
+			socket.addEventListener('message', function (message) {
+				console.log('Message from server', message.data);
 				getData();
-				
+
 				document.getElementById("wsupdate").innerHTML = message.data;
 			});
 
-			function setTable(data){
+			function setTable(data) {
 				$("#table").tabulator({
 					layout: "fitDataFill",
 					height: "311px",
@@ -36,42 +38,42 @@
 						title: "ID",
 						field: "id",
 						align: "center"
-					  },
-					  {
+					},
+					{
 						title: "Date",
 						field: "date"
-					  },
-					  {
+					},
+					{
 						title: "Time",
 						field: "time",
 						align: "center"
-					  },
-					  {
+					},
+					{
 						title: "PlaceName",
 						field: "placename",
-					  },
-					  {
+					},
+					{
 						title: "Latitude",
 						field: "latitude"
-					  },
-					  {
+					},
+					{
 						title: "Lontitude",
 						field: "lontitude"
-					  },
-					  {
+					},
+					{
 						title: "Temperature",
 						field: "temperature",
 						align: "center"
-					  },
-					  {
+					},
+					{
 						title: "Humidity",
 						field: "humidity",
 						align: "center"
-					  },
+					},
 					],
-				  });
+				});
 
-				  var tableData = [{
+				var tableData = [{
 					id: 1,
 					date: "10/10/2010",
 					time: "12:00",
@@ -80,107 +82,114 @@
 					lontitude: "10°12'38.52",
 					temperature: "28°",
 					humidity: "80%",
-				  },
-				]
-				
-				$("#table").tabulator("setData", tableData);
-			
-		</head>
-		<body>
-
-		function getData() {
-			axios.get(ws://localhost:8080/chat)
-			.then(response => {
-			setTable(response.data);
-			}).catch(error => alert('Try again'));
-			}
-
-		function sendData() {
-			axios.post(('ws://localhost:8080/chat',{
-
-				ID: 	document.getElementById(id).value,
-				Date: 	document.getElementById(date).value,
-				Time:	document.getElementById(time).value,
-				Place:
-				{
-					PlaceName: 	document.getElementById(placeName).value,
-					Latitude: 	document.getElementById(latitude).value,
-					Lontitude:	document.getElementById(lontitude).value
 				},
-				
-				Temperature: document.getElementById(temperature).value,
-				Humidity: document.getElementById(humidity).value
+				]
 
-			})
-				.then(response => {
-				}).catch(error => alert('Try again'));
+				$("#table").tabulator("setData", tableData);
+			}
+			function getData() {
+				axios.get('ws://localhost:8080/chat')
+					.then(response => {
+						setTable(response.data);
+					}).catch(error => alert('Try again'));
 			}
 
-		
-		function updateData(idnumber) {
-			axios.put(/* ToDo */)
-			.then(response => {
-			}).catch(error => alert('Try again'));
+			function sendData() {
+				axios.post('ws://localhost:8080/chat', {
+
+					ID: document.getElementById(id).value,
+					Date: document.getElementById(date).value,
+					Time: document.getElementById(time).value,
+					Place:
+					{
+						PlaceName: document.getElementById(placeName).value,
+						Latitude: document.getElementById(latitude).value,
+						Lontitude: document.getElementById(lontitude).value
+					},
+
+					Temperature: document.getElementById(temperature).value,
+					Humidity: document.getElementById(humidity).value
+
+				})
+					.then(response => {
+					}).catch(error => alert('Try again'));
 			}
-			
-		
-		axios.delete('http://localhost:8080/'+idNum)
+
+
+			function updateData(idnumber) {
+				axios.put(/* ToDo */)
+					.then(response => {
+					}).catch(error => alert('Try again'));
+			}
+
+
+			axios.delete('http://localhost:8080/' + idNum)
+
+		</script>
+
+	</head>
+
+	<body>
+
+
 
 
 		<h2>Get weatherstation info</h2>
 
-<input type = "button" onclick = "getData()" value = "Hent Data">
-<div id="table"> </div>
-<br><br>
+		<input type="button" onclick="getData()" value="Hent Data">
+		<div id="table"> </div>
+		<br><br>
 
-<form action="/action_page.php">
-   <label for="id">ID:</label><br>
-   <input type="text" id="id" name="ID"><br>
-   
-   
-   <label for="date">Date:</label><br>
-   <input type="text" id="date" name="Date"><br>
-   
-   <label for="time">Time:</label><br>
-   <input type="text" id="time" name="Time"><br>
-   
-   <label for="placename">Placename:</label><br>
-   <input type="text" id="placename" name="Placename"><br>
-   
-   <label for="latitude">Latitude:</label><br>
-   <input type="text" id="latitude" name="Latitude"><br>
-   
-   <label for="lontitude">Lontitude:</label><br>
-   <input type="text" id="lontitude" name="Lontitude"><br>
-   
-   <label for="temperature">Temperature:</label><br>
-   <input type="text" id="temperature" name="Temperature"><br>
-   
-   <label for="humidity">Humidity:</label><br>
-   <input type="text" id="humidity" name="Humidity"><br>
-   
-<br><br>
-<input type = "button" onclick = "sendData()" value = "Send Data">
-<input type = "button" onclick = "putData()" value = "Update(Put by Id)">
-<input type = "button" onclick = "getDataById()" value = "Get by ID">
+		<form action="/action_page.php">
+			<label for="id">ID:</label><br>
+			<input type="text" id="id" name="ID"><br>
 
-<style>
-table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
-}
 
-td, th {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
-}
+			<label for="date">Date:</label><br>
+			<input type="text" id="date" name="Date"><br>
 
-tr:nth-child(even) {
-  background-color: #dddddd;
-}
-</style>
+			<label for="time">Time:</label><br>
+			<input type="text" id="time" name="Time"><br>
 
-</body>
-</html>
+			<label for="placename">Placename:</label><br>
+			<input type="text" id="placename" name="Placename"><br>
+
+			<label for="latitude">Latitude:</label><br>
+			<input type="text" id="latitude" name="Latitude"><br>
+
+			<label for="lontitude">Lontitude:</label><br>
+			<input type="text" id="lontitude" name="Lontitude"><br>
+
+			<label for="temperature">Temperature:</label><br>
+			<input type="text" id="temperature" name="Temperature"><br>
+
+			<label for="humidity">Humidity:</label><br>
+			<input type="text" id="humidity" name="Humidity"><br>
+
+			<br><br>
+			<input type="button" onclick="sendData()" value="Send Data">
+			<input type="button" onclick="putData()" value="Update(Put by Id)">
+			<input type="button" onclick="getDataById()" value="Get by ID">
+
+			<style>
+				table {
+					font-family: arial, sans-serif;
+					border-collapse: collapse;
+					width: 100%;
+				}
+
+				td,
+				th {
+					border: 1px solid #dddddd;
+					text-align: left;
+					padding: 8px;
+				}
+
+				tr:nth-child(even) {
+					background-color: #dddddd;
+				}
+			</style>
+
+	</body>
+
+	</html>
