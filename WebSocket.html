@@ -111,17 +111,6 @@
 				Temperature: document.getElementById(temperature).value,
 				Humidity: document.getElementById(humidity).value
 
-
-
-				//ID: 'id',
-				//Date: 'date',
-				//Time: 'time',
-				//PlaceName: 'placeName',
-				//Latitude: 'latitude',
-				//Lontitude: 'lontitude',
-				//Temperature: 'temperature',
-				//Humidity: 'humidity',
-
 			})
 				.then(response => {
 				}).catch(error => alert('Try again'));
@@ -140,13 +129,40 @@
 
 		<h2>Get weatherstation info</h2>
 
-		<form action="/action_page.php">
-			<label for="fname">First name:</label><br>
-			<input type="text" id="fname" name="fname"><br>
-			<label for="lname">Last name:</label><br>
-			<input type="text" id="lname" name="lname"><br><br>
-			<input type="submit" value="Submit">
-		  </form>
+<input type = "button" onclick = "getData()" value = "Hent Data">
+<div id="table"> </div>
+<br><br>
+
+<form action="/action_page.php">
+   <label for="id">ID:</label><br>
+   <input type="text" id="id" name="ID"><br>
+   
+   
+   <label for="date">Date:</label><br>
+   <input type="text" id="date" name="Date"><br>
+   
+   <label for="time">Time:</label><br>
+   <input type="text" id="time" name="Time"><br>
+   
+   <label for="placename">Placename:</label><br>
+   <input type="text" id="placename" name="Placename"><br>
+   
+   <label for="latitude">Latitude:</label><br>
+   <input type="text" id="latitude" name="Latitude"><br>
+   
+   <label for="lontitude">Lontitude:</label><br>
+   <input type="text" id="lontitude" name="Lontitude"><br>
+   
+   <label for="temperature">Temperature:</label><br>
+   <input type="text" id="temperature" name="Temperature"><br>
+   
+   <label for="humidity">Humidity:</label><br>
+   <input type="text" id="humidity" name="Humidity"><br>
+   
+<br><br>
+<input type = "button" onclick = "sendData()" value = "Send Data">
+<input type = "button" onclick = "putData()" value = "Update(Put by Id)">
+<input type = "button" onclick = "getDataById()" value = "Get by ID">
 
 	</body>
 	</html>
