@@ -5,12 +5,8 @@
 #include <json_dto/pub.hpp>
 
 namespace rws = restinio::websocket::basic;
+namespace rr = restinio::router;
 
-using traits_t =
-	restinio::traits_t<
-	restinio::asio_timer_manager_t,
-	restinio::single_threaded_ostream_logger_t,
-	router_t >;
 
 using ws_registry_t = std::map< std::uint64_t, rws::ws_handle_t >;
 
@@ -87,8 +83,14 @@ struct weatherReport_t
 
 using weatherStation_t = std::vector< weatherReport_t >;
 
-namespace rr = restinio::router;
+
 using router_t = rr::express_router_t<>;
+
+using traits_t =
+	restinio::traits_t<
+	restinio::asio_timer_manager_t,
+	restinio::single_threaded_ostream_logger_t,
+	router_t >;
 
 class weatherReport_handler_t
 {
@@ -222,6 +224,8 @@ public :
 		{
 			m_weatherReport_t.emplace_back(
 				json_dto::from_json< weatherReport_t >( req->body() ) );
+
+			sendMessage("POST: id = " + json_dto::from_json<weatherReport_t>(req->body()).m_id);
 		}
 		catch( const std::exception & /*ex*/ )
 		{
@@ -245,6 +249,7 @@ public :
 			if( 0 != reportNum && reportNum <= m_weatherReport_t.size() )
 			{
 				m_weatherReport_t[ reportNum - 1 ] = report;
+				sendMessage("PUT: id = " + json_dto::from_json<weatherReport_t>(req->body()).m_id); // hvad er meningen??
 			}
 			else
 			{
@@ -271,8 +276,8 @@ public :
 		{
 			const auto & report = m_weatherReport_t[ reportNum - 1 ];
 			resp.set_body(
-				"Delete weatherReport #" + std::to_string( reportNum ) + ": " + "next line missing (martin)\n");
-					//report.m_title + "[" + report.m_author + "]\n" );
+				"Delete weatherReport #" + std::to_string( reportNum ) + ": " + report.m_place.m_placeName 
+				+ "[" + report.m_date + ", "+ report.m_time + "]\n");
 
 			m_weatherReport_t.erase( m_weatherReport_t.begin() + ( reportNum - 1 ) );
 		}
@@ -284,17 +289,17 @@ public :
 
 		return resp.done();
 	}
-	auto on_live_update(const restinio::request_handle_t& req,rr::router_params_t params)
+	auto on_live_update(const restinio::request_handle_t& req,rr::route_params_t params)
 	{
 		if (restinio::http_connection_header_t::upgrade == req->header().connection())
 		{
 			auto wsh = rws::upgrade<traits_t>(
-				*req, rws::acttivation_t::immediate,
+				*req, rws::activation_t::immediate,
 				[this](auto wsh, auto m)
 				{
-					if( wrws::opcode_t::text_frame == m->opcode() ||
-						wrws::opcode_t::binary_frame == m->opcode() ||
-						wrws::opcode_t::continuation_frame == m-> opcode())
+					if( rws::opcode_t::text_frame == m->opcode() ||
+						rws::opcode_t::binary_frame == m->opcode() ||
+						rws::opcode_t::continuation_frame == m-> opcode())
 					{
 						wsh->send_message(*m);
 					}
@@ -306,11 +311,11 @@ public :
 					}
 					else if (rws::opcode_t::connection_close_frame == m->opcode())
 					{
-						registry.erase(wsh->connection_id());
+						m_registry.erase(wsh->connection_id());
 					}
 				});
 			
-			m_refistry.emplace(wsh->connection_id(), wsh);
+			m_registry.emplace(wsh->connection_id(), wsh);
 
 			init_resp(req->create_response()).done();
 
@@ -330,10 +335,21 @@ private :
 		resp
 			.append_header( "Server", "RESTinio sample server /v.0.6" )
 			.append_header_date_field()
-			.append_header( "Content-Type", "text/plain; charset=utf-8" );
+			.append_header( "Content-Type", "text/plain; charset=utf-8" )
+			.append_header(restinio::http_field::access_control_allow_origin, "*");
 
 		return resp;
 	}
+
+	ws_registry_t m_registry;
+
+
+	void sendMessage(std::string message)
+	{
+		for(auto [k, v] : m_registry)
+			v -> send_message(rws::final_frame, rws::opcode_t::text_frame, message);
+	}
+
 
 	template < typename RESP >
 	static void
@@ -345,7 +361,6 @@ private :
 
 auto server_handler( weatherStation_t & weatherReport_collection )
 {
-	router->http_get("/chat", by(&weathers_handler_t::on_live_update));
 	auto router = std::make_unique< router_t >();
 	auto handler = std::make_shared< weatherReport_handler_t >( std::ref(weatherReport_collection) );
 
@@ -359,6 +374,8 @@ auto server_handler( weatherStation_t & weatherReport_collection )
 					.connection_close()
 					.done();
 		};
+
+
 
 	// Handlers for '/' path.
 	router->http_get( "/", by( &weatherReport_handler_t::on_weatherReport_list ) );
@@ -408,6 +425,9 @@ auto server_handler( weatherStation_t & weatherReport_collection )
 					restinio::http_method_post(),
 					restinio::http_method_delete() ),
 			R"(/:reportNum(\d+))", method_not_allowed );
+	
+	// Live update
+	router->http_get("/chat", by(&weatherReport_handler_t::on_live_update));
 
 	return router;
 }
