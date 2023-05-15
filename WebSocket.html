@@ -8,7 +8,158 @@ DOCTYPE <html>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/js/tabulator.min.js"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/css/tabulator.min.css"></link>
+	DOCTYPE <html>
+	<html lang="en">
+	<head>
+			<title> SWNGK WebClient </title>
 
+			<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/js/tabulator.min.js"></script>
+			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/css/tabulator.min.css"></link>
+
+			<script type = "text/javascript"></script>
+
+			//WebSocket Routing (Note: Route Is chat)
+			const socket = new WebSocket('ws://localhost:8080/chat');
+
+			//Listen for messages
+			socket.addEventListener('open', function (event){
+				//Sending a message to the web socket server...
+				socket.send('Hello Server!');
+			});
+
+			//Listen for messages
+			socket.addEventListener('message', function (message){
+				document.getElementById("wsupdate").innerHTML = message.data;
+			});
+
+			function setTable(data){
+				$("#table").tabulator({
+					layout: "fitDataFill",
+					height: "311px",
+					columns: [{
+						title: "ID",
+						field: "id",
+						align: "center"
+					  },
+					  {
+						title: "Date",
+						field: "date"
+					  },
+					  {
+						title: "Time",
+						field: "time",
+						align: "center"
+					  },
+					  {
+						title: "PlaceName",
+						field: "placename",
+					  },
+					  {
+						title: "Latitude",
+						field: "latitude"
+					  },
+					  {
+						title: "Lontitude",
+						field: "lontitude"
+					  },
+					  {
+						title: "Temperature",
+						field: "temperature",
+						align: "center"
+					  },
+					  {
+						title: "Humidity",
+						field: "humidity",
+						align: "center"
+					  },
+					],
+				  });
+
+				  var tableData = [{
+					id: 1,
+					date: "10/10/2010",
+					time: "12:00",
+					placename: "Aarhus",
+					latitude: "56°09'25.92",
+					lontitude: "10°12'38.52",
+					temperature: "28°",
+					humidity: "80%",
+				  },
+				]
+				
+				$("#table").tabulator("setData", tableData);
+			
+		</head>
+		<body>
+
+		function getData() {
+			axios.get(ws://localhost:8080/chat)
+			.then(response => {
+			setTable(response.data);
+			}).catch(error => alert('Try again'));
+			}
+
+		function sendData() {
+			axios.post(('ws://localhost:8080/chat',{
+
+				ID: 	document.getElementById(id).value,
+				Date: 	document.getElementById(date).value,
+				Time:	document.getElementById(time).value,
+				Place:
+				{
+					PlaceName: 	document.getElementById(placeName).value,
+					Latitude: 	document.getElementById(latitude).value,
+					Lontitude:	document.getElementById(lontitude).value
+				},
+				
+				Temperature: document.getElementById(temperature).value,
+				Humidity: document.getElementById(humidity).value
+
+
+
+				//ID: 'id',
+				//Date: 'date',
+				//Time: 'time',
+				//PlaceName: 'placeName',
+				//Latitude: 'latitude',
+				//Lontitude: 'lontitude',
+				//Temperature: 'temperature',
+				//Humidity: 'humidity',
+
+			})
+				.then(response => {
+				}).catch(error => alert('Try again'));
+			}
+
+		
+		function updateData(idnumber) {
+			axios.put(/* ToDo */)
+			.then(response => {
+			}).catch(error => alert('Try again'));
+			}
+			
+		
+		<input type = "button" onclick = "getData()" value = "Hent data">
+		<div id="table"> </div>
+		
+		axios.delete('http://localhost:8080/'+idNum)
+
+
+		<h2>Get weatherstation info</h2>
+
+		<form action="/action_page.php">
+			<label for="fname">First name:</label><br>
+			<input type="text" id="fname" name="fname"><br>
+			<label for="lname">Last name:</label><br>
+			<input type="text" id="lname" name="lname"><br><br>
+			<input type="submit" value="Submit">
+		  </form>
+
+	</body>
+	</html>
         <script type = "text/javascript"></script>
 
         //WebSocket Routing (Note: Route Is chat)
