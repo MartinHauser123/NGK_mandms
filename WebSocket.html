@@ -1,4 +1,4 @@
-<DOCTYPE html>
+<!DOCTYPE html>
 	<html lang="en">
 
 	<head>
@@ -19,15 +19,15 @@
 			//Listen for messages
 			socket.addEventListener('open', function (event) {
 				//Sending a message to the web socket server...
-				socket.send('Update coming here');
+				socket.send('Update coming here l22');
 			});
 
 			//Listen for messages
 			socket.addEventListener('message', function (message) {
-				console.log('Message from server', message.data);
+				console.log('Message from server l27', message.data);
 				getData();
 
-				document.getElementById("wsupdate").innerHTML = message.data;
+				//document.getElementById("table").innerHTML = message.data;
 			});
 
 			function setTable(data) {
@@ -35,7 +35,7 @@
 					layout: "fitDataFill",
 					height: "311px",
 					columns: [{
-						title: "ID",
+						title: "ID",	
 						field: "id",
 						align: "center"
 					},
@@ -50,15 +50,15 @@
 					},
 					{
 						title: "PlaceName",
-						field: "placename",
+						field: "place.placeName",
 					},
 					{
 						title: "Latitude",
-						field: "latitude"
+						field: "place.latitude"
 					},
 					{
-						title: "Lontitude",
-						field: "lontitude"
+						title: "Longitude",
+						field: "place.longitude"
 					},
 					{
 						title: "Temperature",
@@ -73,42 +73,37 @@
 					],
 				});
 
-				var tableData = [{
-					id: 1,
-					date: "10/10/2010",
-					time: "12:00",
-					placename: "Aarhus",
-					latitude: "56°09'25.92",
-					lontitude: "10°12'38.52",
-					temperature: "28°",
-					humidity: "80%",
-				},
-				]
-
-				$("#table").tabulator("setData", tableData);
+				$("#table").tabulator("setData", data);
 			}
 			function getData() {
-				axios.get('ws://localhost:8080/chat')
+				axios.get('http://localhost:8080')
+					.then(response => {
+						setTable(response.data);
+					}).catch(error => alert('Try again'));
+			}
+			function getDataByID() {
+				var idNum = document.getElementById("id").value;
+				axios.get('http://localhost:8080/'+idNum)
 					.then(response => {
 						setTable(response.data);
 					}).catch(error => alert('Try again'));
 			}
 
 			function sendData() {
-				axios.post('ws://localhost:8080/chat', {
-
-					ID: document.getElementById(id).value,
-					Date: document.getElementById(date).value,
-					Time: document.getElementById(time).value,
-					Place:
+				axios.post('http://localhost:8080', {
+					headers:{'Access-Control-Allow-Origin':'*'},
+					"id" : Number(document.getElementById("id").value),
+					"date" : document.getElementById("date").value,
+					"time" : document.getElementById("time").value,
+					"place" :
 					{
-						PlaceName: document.getElementById(placeName).value,
-						Latitude: document.getElementById(latitude).value,
-						Lontitude: document.getElementById(lontitude).value
+						"placeName" : document.getElementById("placename").value,
+						"latitude" : Number(document.getElementById("latitude").value),
+						"longitude" : Number(document.getElementById("longitude").value)
 					},
 
-					Temperature: document.getElementById(temperature).value,
-					Humidity: document.getElementById(humidity).value
+					"temperature" : Number(document.getElementById("temperature").value),
+					"humidity" : Number(document.getElementById("humidity").value)
 
 				})
 					.then(response => {
@@ -117,27 +112,41 @@
 
 
 			function updateData(idnumber) {
-				axios.put(/* ToDo */)
+				var idNum = document.getElementById("id").value;
+				axios.put('http://localhost:8080/' + idNum, {
+					headers:{'Access-Control-Allow-Origin':'*'},
+					"id" : Number(document.getElementById("id").value),
+					"date" : document.getElementById("date").value,
+					"time" : document.getElementById("time").value,
+					"place" :
+					{
+						"placeName" : document.getElementById("placename").value,
+						"latitude" : Number(document.getElementById("latitude").value),
+						"longitude" : Number(document.getElementById("longitude").value)
+					},
+
+					"temperature" : Number(document.getElementById("temperature").value),
+					"humidity" : Number(document.getElementById("humidity").value)
+
+				})
 					.then(response => {
 					}).catch(error => alert('Try again'));
 			}
 
+			function deleteDataById() {
+			var idNum = document.getElementById("id").value;
+			axios.delete('http://localhost:8080/' + idNum);
 
-			axios.delete('http://localhost:8080/' + idNum)
-
+			}
 		</script>
 
 	</head>
 
 	<body>
 
-
-
-
 		<h2>Get weatherstation info</h2>
 
-		<input type="button" onclick="getData()" value="Hent Data">
-		<div id="table"> </div>
+		
 		<br><br>
 
 		<form action="/action_page.php">
@@ -148,63 +157,8 @@
 			<label for="date">Date:</label><br>
 			<input type="text" id="date" name="Date"><br>
 
-<<<<<<< HEAD
 			<label for="time">Time:</label><br>
 			<input type="text" id="time" name="Time"><br>
-=======
-tr:nth-child(even) {
-  background-color: #dddddd;
-}
-</style>
-</head>
-<body>
-
-<h2>Data:</h2>
-
-<table>
-  <tr>
-    <th>ID</th>
-    <th>Date</th>
-    <th>Time</th>
-    <th>Placename</th>
-    <th>Latitude</th>
-    <th>Lontitude</th>
-    <th>Temperature</th>
-    <th>Humidity</th>
-  </tr>
-  <tr>
-    <td>1</td>
-    <td>12/12/2012</td>
-    <td>12:00</td>
-    <td>Aarhus</td>
-    <td>56°09'25.92</td>
-    <td>10°12'38.52</td>
-    <td>10°</td>
-    <td>10%</td>
-  </tr>
-  <tr>
-    <td>1</td>
-    <td>12/12/2012</td>
-    <td>12:00</td>
-    <td>Aarhus</td>
-    <td>56°09'25.92</td>
-    <td>10°12'38.52</td>
-    <td>10°</td>
-    <td>10%</td>
-  </tr>
-  <tr>
-    <td>1</td>
-    <td>12/12/2012</td>
-    <td>12:00</td>
-    <td>Aarhus</td>
-    <td>56°09'25.92</td>
-    <td>10°12'38.52</td>
-    <td>10°</td>
-    <td>10%</td>
-  </tr>
-</table>
-
->>>>>>> 251934f19adb0d3f8fcac97ee9b09ef19a73a1f6
 
 			<label for="placename">Placename:</label><br>
 			<input type="text" id="placename" name="Placename"><br>
@@ -212,8 +166,8 @@ tr:nth-child(even) {
 			<label for="latitude">Latitude:</label><br>
 			<input type="text" id="latitude" name="Latitude"><br>
 
-			<label for="lontitude">Lontitude:</label><br>
-			<input type="text" id="lontitude" name="Lontitude"><br>
+			<label for="longitude">Lontitude:</label><br>
+			<input type="text" id="longitude" name="Longitude"><br>
 
 			<label for="temperature">Temperature:</label><br>
 			<input type="text" id="temperature" name="Temperature"><br>
@@ -222,9 +176,11 @@ tr:nth-child(even) {
 			<input type="text" id="humidity" name="Humidity"><br>
 
 			<br><br>
+			<input type="button" onclick="getData()" value="Hent Data">
 			<input type="button" onclick="sendData()" value="Send Data">
-			<input type="button" onclick="putData()" value="Update(Put by Id)">
-			<input type="button" onclick="getDataById()" value="Get by ID">
+			<input type="button" onclick="updateData()" value="Update(Put by Id)">
+			<input type="button" onclick="getDataByID()" value="Get by ID">
+			<input type="button" onclick="deleteDataById()" value="delete by ID">
 
 			<style>
 				table {
@@ -245,53 +201,14 @@ tr:nth-child(even) {
 				}
 			</style>
 			</head>
+
 			<body>
 
-			<h2>Data:</h2>
+				<h2>Data:</h2>
 
-			<table>
-			  <tr>
-			    <th>ID</th>
-			    <th>Date</th>
-			    <th>Time</th>
-			    <th>Placename</th>
-			    <th>Latitude</th>
-			    <th>Lontitude</th>
-			    <th>Temperature</th>
-			    <th>Humidity</th>
-			  </tr>
-			  <tr>
-			    <td>1</td>
-			    <td>12/12/2012</td>
-			    <td>12:00</td>
-			    <td>Aarhus</td>
-			    <td>56°09'25.92</td>
-			    <td>10°12'38.52</td>
-			    <td>10°</td>
-			    <td>10%</td>
-			  </tr>
-			  <tr>
-			    <td>1</td>
-			    <td>12/12/2012</td>
-			    <td>12:00</td>
-			    <td>Aarhus</td>
-			    <td>56°09'25.92</td>
-			    <td>10°12'38.52</td>
-			    <td>10°</td>
-			    <td>10%</td>
-			  </tr>
-			  <tr>
-			    <td>1</td>
-			    <td>12/12/2012</td>
-			    <td>12:00</td>
-			    <td>Aarhus</td>
-			    <td>56°09'25.92</td>
-			    <td>10°12'38.52</td>
-			    <td>10°</td>
-			    <td>10%</td>
-			  </tr>
-			</table>
+				
+				<div id = "table"></div>
 
-	</body>
+			</body>
 
 	</html>
